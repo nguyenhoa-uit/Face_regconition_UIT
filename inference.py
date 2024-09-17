@@ -54,13 +54,15 @@ label_encoder = pickle.loads(open(args["label_encoder"], "rb").read())
 cap = cv2.VideoCapture(source)
 frames = []
 fig = plt.figure()
-
+ct=0
+print("start .................... /n /n ")
 while True:
     success, img = cap.read()
+    img=cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     if not success:
         print('[INFO] Error with Camera')
         break
-
+ 
     detections = detector.detect_faces(img)
     if len(detections) > 0:
         for detect in detections:
@@ -129,14 +131,16 @@ while True:
         print('[INFO] Eyes Not Detected!!')
 
     frame = plt.imshow(img, animated=True)
-    frames.append([frame])
+    frames.append([frame.set])
+    ct+=1
+    if ct>5:
+      break
     if cv2.waitKey(1) & 0xFF == ord('q'):
         cv2.destroyAllWindows()
         break
 
 ani = animation.ArtistAnimation(fig, frames, interval=50, blit=True,
                                 repeat_delay=1000)
-ani.save(f"test/output_{filename}_{threshold}.mp4")
-
-
-print('[INFO] Inference on Videostream is Ended...')
+savefile=f"test/output_{filename}_{threshold}.mp4"                                
+ani.save(savefile)
+print("saving ",savefile)
